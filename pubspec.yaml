@@ -1,6 +1,6 @@
 name: dusidash
-description: "A new Flutter project."
-publish_to: 'none'
+description: "Dashboard with Fluent UI"
+publish_to: "none"
 version: 0.1.0
 
 environment:
@@ -9,6 +9,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  fluent_ui: ^4.1.0
+  provider: ^6.1.1
+  go_router: ^14.0.2
+  http: ^1.1.0
 
 dev_dependencies:
   flutter_test:
