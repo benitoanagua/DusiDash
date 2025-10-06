@@ -25,17 +25,16 @@ class SettingsScreen extends StatelessWidget {
                       style: FluentTheme.of(context).typography.subtitle,
                     ),
                     const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        const Text('Dark Mode'),
-                        const Spacer(),
-                        ToggleSwitch(
-                          checked: context.watch<ThemeProvider>().isDark,
+                    Consumer<ThemeProvider>(
+                      builder: (context, themeProvider, child) {
+                        return ToggleSwitch(
+                          checked: themeProvider.isDark,
                           onChanged: (value) {
-                            context.read<ThemeProvider>().toggleTheme();
+                            themeProvider.toggleTheme();
                           },
-                        ),
-                      ],
+                          content: const Text('Dark Mode'),
+                        );
+                      },
                     ),
                   ],
                 ),

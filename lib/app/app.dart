@@ -1,7 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:provider/provider.dart';
-import '../screens/dashboard_screen.dart';
 import '../providers/theme_provider.dart';
+import 'router.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -10,17 +10,18 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
 
-    return FluentApp(
+    return FluentApp.router(
       title: 'Dusi Dash',
+      themeMode: themeProvider.themeMode,
       theme: FluentThemeData(
-        brightness: themeProvider.isDark ? Brightness.dark : Brightness.light,
+        brightness: Brightness.light,
         accentColor: Colors.blue,
       ),
       darkTheme: FluentThemeData(
         brightness: Brightness.dark,
         accentColor: Colors.blue,
       ),
-      home: const DashboardScreen(),
+      routerConfig: router,
       debugShowCheckedModeBanner: false,
     );
   }

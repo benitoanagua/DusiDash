@@ -2,19 +2,20 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:provider/provider.dart';
 import 'app/app.dart';
 import 'providers/theme_provider.dart';
+import 'providers/dashboard_provider.dart';
 
-void main() {
-  runApp(const DusiDashApp());
-}
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-class DusiDashApp extends StatelessWidget {
-  const DusiDashApp({super.key});
+  final themeProvider = ThemeProvider();
 
-  @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => ThemeProvider(),
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: themeProvider),
+        ChangeNotifierProvider(create: (_) => DashboardProvider()),
+      ],
       child: const App(),
-    );
-  }
+    ),
+  );
 }
