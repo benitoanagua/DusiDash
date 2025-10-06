@@ -8,6 +8,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final themeProvider = ThemeProvider();
+  // await themeProvider.loadTheme();
 
   runApp(
     MultiProvider(

@@ -1,59 +1,98 @@
 import 'package:flutter/foundation.dart';
+import '../core/data/model_factories.dart';
 import '../models/user.dart';
+import '../models/company.dart';
+import '../models/report.dart';
 
 class DashboardProvider with ChangeNotifier {
   List<User> _users = [];
+  List<Company> _companies = [];
+  List<Report> _reports = [];
   bool _isLoading = false;
   Map<String, dynamic> _stats = {};
-  String? _error;
+  Map<String, dynamic> _metrics = {};
 
   List<User> get users => _users;
+  List<Company> get companies => _companies;
+  List<Report> get reports => _reports;
   bool get isLoading => _isLoading;
   Map<String, dynamic> get stats => _stats;
-  String? get error => _error;
+  Map<String, dynamic> get metrics => _metrics;
+
+  DashboardProvider() {
+    loadDashboardData();
+  }
 
   Future<void> loadDashboardData() async {
     _isLoading = true;
-    _error = null;
     notifyListeners();
 
     try {
-      await Future.delayed(const Duration(seconds: 2));
-
-      _stats = {
-        'totalUsers': 1234,
-        'totalCompanies': 567,
-        'activeReports': 89,
-        'pendingTasks': 23,
-      };
-
-      _users = List.generate(
-        10,
-        (index) => User(
-          id: '${index + 1}',
-          name: 'User ${index + 1}',
-          email: 'user${index + 1}@example.com',
-          role: index % 3 == 0 ? 'Admin' : 'User',
-          createdAt: DateTime.now().subtract(Duration(days: index * 10)),
-        ),
-      );
-
-      _isLoading = false;
-      notifyListeners();
+      await Future.wait([
+        _loadUsers(),
+        _loadCompanies(),
+        _loadReports(),
+        _generateStats(),
+        _generateMetrics(),
+      ]);
     } catch (e) {
-      _error = e.toString();
+      if (kDebugMode) {
+        print('Error loading dashboard data: $e');
+      }
+    } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  Future<void> addUser(User user) async {
-    _users.insert(0, user);
-    notifyListeners();
+  Future<void> _loadUsers() async {
+    await Future.delayed(const Duration(milliseconds: 800));
+    _users = List.generate(12, (index) => ModelFactory.createUser());
   }
 
-  Future<void> deleteUser(String userId) async {
-    _users.removeWhere((user) => user.id == userId);
-    notifyListeners();
+  Future<void> _loadCompanies() async {
+    await Future.delayed(const Duration(milliseconds: 600));
+    _companies = List.generate(8, (index) => ModelFactory.createCompany());
+  }
+
+  Future<void> _loadReports() async {
+    await Future.delayed(const Duration(milliseconds: 400));
+    _reports = List.generate(6, (index) => ModelFactory.createReport());
+  }
+
+  Future<void> _generateStats() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    _stats = {
+      'totalUsers': _users.length,
+      'totalCompanies': _companies.length,
+      'activeReports': _reports.where((r) => r.status == 'completed').length,
+      'pendingTasks': _reports.where((r) => r.status == 'in_progress').length,
+      'revenue': _companies.fold<double>(
+        0,
+        (sum, company) => sum + company.revenue,
+      ),
+      'activeUsers': _users.where((u) => u.isActive).length,
+    };
+  }
+
+  Future<void> _generateMetrics() async {
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    _metrics = {
+      'userGrowth': '${_randomGrowth()}%',
+      'revenueGrowth': '${_randomGrowth()}%',
+      'engagementRate': '${_randomPercentage()}%',
+      'conversionRate': '${_randomPercentage()}%',
+      'satisfactionScore': '${_randomScore()}/100',
+    };
+  }
+
+  int _randomGrowth() => DateTime.now().millisecondsSinceEpoch % 20 + 5;
+  int _randomPercentage() => DateTime.now().millisecondsSinceEpoch % 50 + 50;
+  int _randomScore() => DateTime.now().millisecondsSinceEpoch % 30 + 70;
+
+  void refreshData() {
+    loadDashboardData();
   }
 }

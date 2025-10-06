@@ -5,38 +5,55 @@ class CompaniesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ScaffoldPage(
+    return ScaffoldPage.withPadding(
       header: const PageHeader(title: Text('Companies Management')),
-      content: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: TextBox(
-                    placeholder: 'Search companies...',
-                    prefix: const Icon(FluentIcons.search, size: 16),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                FilledButton(
-                  onPressed: () {},
-                  child: const Row(
-                    children: [
-                      Icon(FluentIcons.add),
-                      SizedBox(width: 8),
-                      Text('Add Company'),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Expanded(child: _CompaniesTable()),
-          ],
+      content: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildActionBar(context),
+          const SizedBox(height: 16),
+          Expanded(child: _CompaniesTable()),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionBar(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: TextBox(
+            placeholder: 'Search companies...',
+            prefix: const Icon(FluentIcons.search, size: 16),
+          ),
         ),
+        const SizedBox(width: 16),
+        FilledButton(
+          onPressed: () => _showComingSoonDialog(context, 'Add Company'),
+          child: const Row(
+            children: [
+              Icon(FluentIcons.add),
+              SizedBox(width: 8),
+              Text('Add Company'),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showComingSoonDialog(BuildContext context, String feature) {
+    showDialog(
+      context: context,
+      builder: (context) => ContentDialog(
+        title: Text(feature),
+        content: Text('$feature feature coming soon.'),
+        actions: [
+          Button(
+            child: const Text('OK'),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
       ),
     );
   }
@@ -66,8 +83,8 @@ class _CompaniesTable extends StatelessWidget {
                 itemCount: 15,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    leading: CircleAvatar(
-                      child: Icon(FluentIcons.offline_one_drive_parachute),
+                    leading: const CircleAvatar(
+                      child: Icon(FluentIcons.business_card),
                     ),
                     title: Text('Company ${index + 1}'),
                     subtitle: Text('Industry ${index + 1}'),

@@ -5,44 +5,45 @@ class ReportsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ScaffoldPage(
+    return ScaffoldPage.withPadding(
       header: const PageHeader(title: Text('Reports & Analytics')),
-      content: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Wrap(
-              spacing: 16,
-              runSpacing: 16,
-              children: [
-                FilledButton(
-                  onPressed: () {},
-                  child: const Row(
-                    children: [
-                      Icon(FluentIcons.download),
-                      SizedBox(width: 8),
-                      Text('Export Report'),
-                    ],
-                  ),
-                ),
-                Button(
-                  onPressed: () {},
-                  child: const Row(
-                    children: [
-                      Icon(FluentIcons.print),
-                      SizedBox(width: 8),
-                      Text('Print Report'),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            Expanded(child: _ReportsContent()),
-          ],
-        ),
+      content: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildActionBar(),
+          const SizedBox(height: 24),
+          Expanded(child: _ReportsContent()),
+        ],
       ),
+    );
+  }
+
+  Widget _buildActionBar() {
+    return Wrap(
+      spacing: 16,
+      runSpacing: 16,
+      children: [
+        FilledButton(
+          onPressed: () {},
+          child: const Row(
+            children: [
+              Icon(FluentIcons.download),
+              SizedBox(width: 8),
+              Text('Export Report'),
+            ],
+          ),
+        ),
+        Button(
+          onPressed: () {},
+          child: const Row(
+            children: [
+              Icon(FluentIcons.print),
+              SizedBox(width: 8),
+              Text('Print Report'),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

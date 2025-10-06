@@ -6,78 +6,58 @@ class UsersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ScaffoldPage(
+    return ScaffoldPage.withPadding(
       header: const PageHeader(title: Text('Users Management')),
-      content: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: SearchBox(
-                    placeholder: 'Search users...',
-                    onChanged: (value) {},
-                  ),
-                ),
-                const SizedBox(width: 16),
-                FilledButton(
-                  onPressed: () {},
-                  child: const Row(
-                    children: [
-                      Icon(FluentIcons.add),
-                      SizedBox(width: 8),
-                      Text('Add User'),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Button(
-                  onPressed: () {},
-                  child: const Row(
-                    children: [
-                      Icon(FluentIcons.upload),
-                      SizedBox(width: 8),
-                      Text('Import'),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
+      content: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Barra de búsqueda y acciones
+          _buildActionBar(context),
+          const SizedBox(height: 16),
 
-            Wrap(
-              spacing: 8,
-              children: [
-                _buildFilterChip('All Users', true),
-                _buildFilterChip('Active', false),
-                _buildFilterChip('Inactive', false),
-                _buildFilterChip('Admins', false),
-              ],
-            ),
-            const SizedBox(height: 16),
-
-            Expanded(child: _UsersTable()),
-          ],
-        ),
+          // Contenido principal
+          Expanded(child: _UsersTable()),
+        ],
       ),
     );
   }
 
-  Widget _buildFilterChip(String text, bool selected) {
-    return Container(
-      decoration: BoxDecoration(
-        color: selected ? Colors.blue : Colors.transparent,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: selected ? Colors.blue : Colors.grey[30]),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        child: Text(
-          text,
-          style: TextStyle(color: selected ? Colors.white : Colors.grey[100]),
+  Widget _buildActionBar(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: SearchBox(
+            placeholder: 'Search users...',
+            onChanged: (value) {},
+          ),
         ),
+        const SizedBox(width: 16),
+        FilledButton(
+          onPressed: () => _showComingSoonDialog(context, 'Add User'),
+          child: const Row(
+            children: [
+              Icon(FluentIcons.add),
+              SizedBox(width: 8),
+              Text('Add User'),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showComingSoonDialog(BuildContext context, String feature) {
+    showDialog(
+      context: context,
+      builder: (context) => ContentDialog(
+        title: Text(feature),
+        content: Text('$feature feature coming soon.'),
+        actions: [
+          Button(
+            child: const Text('OK'),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
       ),
     );
   }
@@ -102,7 +82,6 @@ class _UsersTable extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-
             Expanded(
               child: ListView.builder(
                 itemCount: 20,

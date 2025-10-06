@@ -41,7 +41,9 @@ class ThemeProvider with ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_themeKey, _themeMode.toString());
       notifyListeners();
-    } catch (e) {}
+    } catch (e) {
+      // Ignorar errores de persistencia
+    }
   }
 
   Future<void> setThemeMode(ThemeMode mode) async {
@@ -53,6 +55,8 @@ class ThemeProvider with ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_themeKey, mode.toString());
       notifyListeners();
-    } catch (e) {}
+    } catch (e) {
+      // Ignorar errores de persistencia
+    }
   }
 }
