@@ -1,40 +1,38 @@
-import 'package:faker_dart/faker_dart.dart';
 import '../../models/user.dart';
 import '../../models/company.dart';
 import '../../models/report.dart';
 import 'faker_service.dart';
 
 class ModelFactory {
-  static User createUser([Faker? faker]) {
-    final f = faker ?? FakerService().faker;
-    final service = FakerService();
+  static final _service = FakerService();
+  static final _faker = _service.faker;
 
+  static User createUser() {
     return User(
-      id: f.datatype.uuid(),
-      name: f.name.fullName(),
-      email: f.internet.email(),
-      phone: f.phoneNumber.phoneNumber(),
-      role: service.randomArrayElement(['Admin', 'Manager', 'User', 'Viewer']),
-      company: f.company.companyName(),
-      department: f.commerce.department(),
-      avatar: _generateAvatar(service),
-      status: service.randomArrayElement(['active', 'inactive', 'pending']),
-      joinDate: service.pastDate(maxYears: 3),
-      lastLogin: service.recentDate(maxDays: 30),
-      permissions: _generatePermissions(service),
-      metadata: _generateUserMetadata(service),
+      id: _faker.datatype.uuid(),
+      name: _faker.name.fullName(),
+      email: _faker.internet.email(),
+      phone: _faker.phoneNumber.phoneNumber(),
+      role: _service.randomArrayElement(['Admin', 'Manager', 'User', 'Viewer']),
+      company: _faker.company.companyName(),
+      department: _faker.commerce.department(),
+      avatar: _generateAvatar(),
+      status: _service.randomArrayElement(['active', 'inactive', 'pending']),
+      joinDate: _service.pastDate(maxYears: 3),
+      lastLogin: _service.recentDate(maxDays: 30),
+      permissions: _generatePermissions(),
+      metadata: _generateUserMetadata(),
     );
   }
 
-  static Company createCompany([Faker? faker]) {
-    final f = faker ?? FakerService().faker;
-    final service = FakerService();
+  static Company createCompany() {
+    final fakerService = FakerService();
 
     return Company(
-      id: f.datatype.uuid(),
-      name: f.company.companyName(),
-      industry: f.commerce.department(),
-      size: service.randomArrayElement([
+      id: _faker.datatype.uuid(),
+      name: _faker.company.companyName(),
+      industry: _faker.commerce.department(),
+      size: _service.randomArrayElement([
         '1-10',
         '11-50',
         '51-200',
@@ -42,24 +40,22 @@ class ModelFactory {
         '501-1000',
         '1000+',
       ]),
-      founded: service.pastDate(maxYears: 20),
-      revenue: double.parse(f.commerce.price(min: 100000, max: 10000000)),
-      employees: f.datatype.number(min: 1, max: 5000),
-      location: '${f.address.city()}, ${f.address.country()}',
-      website: f.internet.domainName(),
-      description: f.lorem.paragraph(sentenceCount: 2),
+      founded: _service.pastDate(maxYears: 20),
+      revenue: fakerService.generatePrice(min: 100000, max: 10000000),
+      employees: _faker.datatype.number(min: 1, max: 5000),
+      location: '${_faker.address.city()}, ${_faker.address.country()}',
+      website: _faker.internet.domainName(),
+      description: _faker.lorem.paragraph(sentenceCount: 2),
       contact: ContactInfo(
-        email: f.internet.email(),
-        phone: f.phoneNumber.phoneNumber(),
-        address: f.address.streetAddress(),
+        email: _faker.internet.email(),
+        phone: _faker.phoneNumber.phoneNumber(),
+        address: _faker.address.streetAddress(),
       ),
-      tags: _generateCompanyTags(service),
+      tags: _generateCompanyTags(),
     );
   }
 
-  static Report createReport([Faker? faker]) {
-    final f = faker ?? FakerService().faker;
-    final service = FakerService();
+  static Report createReport() {
     final types = [
       'financial',
       'performance',
@@ -67,30 +63,27 @@ class ModelFactory {
       'analytics',
       'compliance',
     ];
+    final type = _service.randomArrayElement(types);
 
     return Report(
-      id: f.datatype.uuid(),
-      title: '${f.commerce.productName()} Report',
-      type: service.randomArrayElement(types),
-      status: service.randomArrayElement([
+      id: _faker.datatype.uuid(),
+      title: '${_faker.commerce.productName()} Report',
+      type: type,
+      status: _service.randomArrayElement([
         'draft',
         'in_progress',
         'completed',
         'published',
       ]),
-      generatedBy: createUser(f),
-      createdAt: service.pastDate(maxYears: 1),
-      updatedAt: service.recentDate(maxDays: 7),
-      data: _generateReportData(
-        f,
-        service,
-        types.indexOf(service.randomArrayElement(types)),
-      ),
-      metrics: _generateReportMetrics(service),
+      generatedBy: createUser(),
+      createdAt: _service.pastDate(maxYears: 1),
+      updatedAt: _service.recentDate(maxDays: 7),
+      data: _generateReportData(type),
+      metrics: _generateReportMetrics(),
     );
   }
 
-  static String _generateAvatar(FakerService service) {
+  static String _generateAvatar() {
     final avatars = [
       '👨‍💼',
       '👩‍💼',
@@ -101,10 +94,10 @@ class ModelFactory {
       '👨‍🚀',
       '👩‍🚀',
     ];
-    return service.randomArrayElement(avatars);
+    return _service.randomArrayElement(avatars);
   }
 
-  static List<String> _generatePermissions(FakerService service) {
+  static List<String> _generatePermissions() {
     final allPermissions = [
       'read',
       'write',
@@ -113,22 +106,22 @@ class ModelFactory {
       'export',
       'import',
     ];
-    return service.randomArrayElements(
+    return _service.randomArrayElements(
       allPermissions,
-      count: service.faker.datatype.number(min: 1, max: 4),
+      count: _faker.datatype.number(min: 1, max: 4),
     );
   }
 
-  static Map<String, dynamic> _generateUserMetadata(FakerService service) {
+  static Map<String, dynamic> _generateUserMetadata() {
     return {
-      'timezone': service.faker.address.timezone(),
-      'language': service.randomArrayElement(['en', 'es', 'fr', 'de']),
-      'notifications': service.faker.datatype.boolean(),
-      'theme': service.randomArrayElement(['light', 'dark', 'auto']),
+      'timezone': _faker.address.timezone(),
+      'language': _service.randomArrayElement(['en', 'es', 'fr', 'de']),
+      'notifications': _faker.datatype.boolean(),
+      'theme': _service.randomArrayElement(['light', 'dark', 'auto']),
     };
   }
 
-  static List<String> _generateCompanyTags(FakerService service) {
+  static List<String> _generateCompanyTags() {
     final tags = [
       'Tech',
       'Finance',
@@ -139,100 +132,88 @@ class ModelFactory {
       'Startup',
       'Enterprise',
     ];
-    return service.randomArrayElements(
+    return _service.randomArrayElements(
       tags,
-      count: service.faker.datatype.number(min: 1, max: 3),
+      count: _faker.datatype.number(min: 1, max: 3),
     );
   }
 
-  static Map<String, dynamic> _generateReportData(
-    Faker faker,
-    FakerService service,
-    int typeIndex,
-  ) {
-    final dataTypes = [
-      _generateFinancialData,
-      _generatePerformanceData,
-      _generateAuditData,
-      _generateAnalyticsData,
-      _generateComplianceData,
-    ];
-
-    return dataTypes[typeIndex](faker, service);
+  static Map<String, dynamic> _generateReportData(String type) {
+    switch (type) {
+      case 'financial':
+        return _generateFinancialData();
+      case 'performance':
+        return _generatePerformanceData();
+      case 'audit':
+        return _generateAuditData();
+      case 'analytics':
+        return _generateAnalyticsData();
+      case 'compliance':
+        return _generateComplianceData();
+      default:
+        return {};
+    }
   }
 
-  static Map<String, dynamic> _generateFinancialData(
-    Faker faker,
-    FakerService service,
-  ) {
+  static Map<String, dynamic> _generateFinancialData() {
+    final fakerService = FakerService();
+
     return {
-      'revenue': double.parse(faker.commerce.price(min: 10000, max: 1000000)),
-      'expenses': double.parse(faker.commerce.price(min: 5000, max: 500000)),
-      'profit': double.parse(faker.commerce.price(min: 5000, max: 500000)),
-      'growthRate': '${faker.datatype.number(min: 5, max: 25)}%',
+      'revenue': fakerService.generatePrice(min: 10000, max: 1000000),
+      'expenses': fakerService.generatePrice(min: 5000, max: 500000),
+      'profit': fakerService.generatePrice(min: 5000, max: 500000),
+      'growthRate': '${_faker.datatype.number(min: 5, max: 25)}%',
       'quarter':
-          'Q${faker.datatype.number(min: 1, max: 4)} ${DateTime.now().year}',
+          'Q${_faker.datatype.number(min: 1, max: 4)} ${DateTime.now().year}',
     };
   }
 
-  static Map<String, dynamic> _generatePerformanceData(
-    Faker faker,
-    FakerService service,
-  ) {
+  static Map<String, dynamic> _generatePerformanceData() {
     return {
-      'uptime': '${faker.datatype.number(min: 95, max: 100)}%',
-      'responseTime': '${faker.datatype.number(min: 100, max: 500)}ms',
-      'usersActive': faker.datatype.number(min: 100, max: 10000),
-      'conversionRate': '${faker.datatype.number(min: 1, max: 15)}%',
+      'uptime': '${_faker.datatype.number(min: 95, max: 100)}%',
+      'responseTime': '${_faker.datatype.number(min: 100, max: 500)}ms',
+      'usersActive': _faker.datatype.number(min: 100, max: 10000),
+      'conversionRate': '${_faker.datatype.number(min: 1, max: 15)}%',
     };
   }
 
-  static Map<String, dynamic> _generateAuditData(
-    Faker faker,
-    FakerService service,
-  ) {
+  static Map<String, dynamic> _generateAuditData() {
     return {
-      'auditScore': faker.datatype.number(min: 50, max: 100),
-      'issuesFound': faker.datatype.number(min: 0, max: 20),
-      'complianceLevel': '${faker.datatype.number(min: 70, max: 100)}%',
-      'lastAudit': service.pastDate(maxYears: 1).toIso8601String(),
+      'auditScore': _faker.datatype.number(min: 50, max: 100),
+      'issuesFound': _faker.datatype.number(min: 0, max: 20),
+      'complianceLevel': '${_faker.datatype.number(min: 70, max: 100)}%',
+      'lastAudit': _service.pastDate(maxYears: 1).toIso8601String(),
     };
   }
 
-  static Map<String, dynamic> _generateAnalyticsData(
-    Faker faker,
-    FakerService service,
-  ) {
+  static Map<String, dynamic> _generateAnalyticsData() {
     return {
-      'pageViews': faker.datatype.number(min: 1000, max: 100000),
-      'bounceRate': '${faker.datatype.number(min: 20, max: 70)}%',
-      'sessionDuration': '${faker.datatype.number(min: 1, max: 30)}min',
-      'trafficSources': _generateTrafficSources(service),
+      'pageViews': _faker.datatype.number(min: 1000, max: 100000),
+      'bounceRate': '${_faker.datatype.number(min: 20, max: 70)}%',
+      'sessionDuration': '${_faker.datatype.number(min: 1, max: 30)}min',
+      'trafficSources': _generateTrafficSources(),
     };
   }
 
-  static Map<String, dynamic> _generateComplianceData(
-    Faker faker,
-    FakerService service,
-  ) {
+  static Map<String, dynamic> _generateComplianceData() {
     return {
-      'regulations': service.randomArrayElements([
+      'regulations': _service.randomArrayElements([
         'GDPR',
         'HIPAA',
         'SOX',
         'PCI-DSS',
       ], count: 2),
-      'complianceStatus': service.randomArrayElement([
+      'complianceStatus': _service.randomArrayElement([
         'compliant',
         'partial',
         'non-compliant',
       ]),
-      'lastReview': service.pastDate(maxYears: 1).toIso8601String(),
-      'reviewer': faker.name.fullName(),
+      'lastReview': _service.pastDate(maxYears: 1).toIso8601String(),
+      'reviewer': _faker.name.fullName(),
     };
   }
 
-  static Map<String, dynamic> _generateTrafficSources(FakerService service) {
+  static Map<String, dynamic> _generateTrafficSources() {
     final sources = [
       'Direct',
       'Organic Search',
@@ -243,18 +224,18 @@ class ModelFactory {
     final result = <String, int>{};
 
     for (final source in sources) {
-      result[source] = service.faker.datatype.number(min: 100, max: 10000);
+      result[source] = _faker.datatype.number(min: 100, max: 10000);
     }
 
     return result;
   }
 
-  static Map<String, dynamic> _generateReportMetrics(FakerService service) {
+  static Map<String, dynamic> _generateReportMetrics() {
     return {
-      'completion': service.faker.datatype.number(min: 0, max: 100),
-      'accuracy': '${service.faker.datatype.number(min: 85, max: 100)}%',
-      'dataPoints': service.faker.datatype.number(min: 100, max: 10000),
-      'processingTime': '${service.faker.datatype.number(min: 1, max: 60)}min',
+      'completion': _faker.datatype.number(min: 0, max: 100),
+      'accuracy': '${_faker.datatype.number(min: 85, max: 100)}%',
+      'dataPoints': _faker.datatype.number(min: 100, max: 10000),
+      'processingTime': '${_faker.datatype.number(min: 1, max: 60)}min',
     };
   }
 }

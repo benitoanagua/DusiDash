@@ -2,6 +2,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:provider/provider.dart';
 import '../widgets/stat_card.dart';
 import '../providers/dashboard_provider.dart';
+import '../core/data/faker_service.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -25,10 +26,11 @@ class DashboardScreen extends StatelessWidget {
             );
           }
 
+          final fakerService = FakerService();
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Estadísticas principales
               Wrap(
                 spacing: 16,
                 runSpacing: 16,
@@ -58,11 +60,23 @@ class DashboardScreen extends StatelessWidget {
                     icon: FluentIcons.checkbox_composite,
                     color: Colors.purple,
                   ),
+                  StatCard(
+                    title: 'Total Revenue',
+                    value: fakerService.formatCurrency(
+                      dashboardProvider.stats['revenue']?.toDouble() ?? 0.0,
+                    ),
+                    icon: FluentIcons.money,
+                    color: Colors.teal,
+                  ),
+                  StatCard(
+                    title: 'Active Users',
+                    value: '${dashboardProvider.stats['activeUsers'] ?? '0'}',
+                    icon: FluentIcons.contact,
+                    color: Colors.yellow,
+                  ),
                 ],
               ),
               const SizedBox(height: 24),
-
-              // Contenido adicional
               Expanded(child: _DashboardContent(provider: dashboardProvider)),
             ],
           );
@@ -82,7 +96,6 @@ class _DashboardContent extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Métricas de performance
         Expanded(
           flex: 2,
           child: Card(
@@ -97,31 +110,74 @@ class _DashboardContent extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   ..._buildMetrics(context),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Recent Users',
+                    style: FluentTheme.of(context).typography.subtitle,
+                  ),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: provider.users.take(5).length,
+                      itemBuilder: (context, index) {
+                        final user = provider.users[index];
+                        return ListTile(
+                          leading: CircleAvatar(
+                            child: Text(
+                              user.name.substring(0, 2).toUpperCase(),
+                            ),
+                          ),
+                          title: Text(user.name),
+                          subtitle: Text(user.role),
+                          trailing: Text(user.lastActiveFormatted),
+                        );
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
         ),
         const SizedBox(width: 16),
-
-        // Acciones rápidas
         Expanded(
           flex: 1,
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Quick Actions',
-                    style: FluentTheme.of(context).typography.subtitle,
+          child: Column(
+            children: [
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Quick Actions',
+                        style: FluentTheme.of(context).typography.subtitle,
+                      ),
+                      const SizedBox(height: 16),
+                      ..._buildQuickActions(context),
+                    ],
                   ),
-                  const SizedBox(height: 16),
-                  ..._buildQuickActions(context),
-                ],
+                ),
               ),
-            ),
+              const SizedBox(height: 16),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Top Companies',
+                        style: FluentTheme.of(context).typography.subtitle,
+                      ),
+                      const SizedBox(height: 16),
+                      ..._buildTopCompanies(context, FakerService()),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ],
@@ -150,6 +206,11 @@ class _DashboardContent extends StatelessWidget {
         'Conversion Rate',
         metrics['conversionRate'] ?? '8%',
         Colors.purple,
+      ),
+      _buildMetricItem(
+        'Satisfaction Score',
+        metrics['satisfactionScore'] ?? '85/100',
+        Colors.teal,
       ),
     ];
   }
@@ -205,6 +266,51 @@ class _DashboardContent extends StatelessWidget {
         onPressed: () => _showComingSoonDialog(context, 'Export Data'),
       ),
     ];
+  }
+
+  List<Widget> _buildTopCompanies(
+    BuildContext context,
+    FakerService fakerService,
+  ) {
+    return provider.companies.take(3).map((company) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 12.0),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 20,
+              child: Text(company.name.substring(0, 2).toUpperCase()),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    company.name,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    company.industry,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey.withValues(alpha: 100),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Text(
+              fakerService.formatCurrency(company.revenue),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
+              ),
+            ),
+          ],
+        ),
+      );
+    }).toList();
   }
 
   void _showComingSoonDialog(BuildContext context, String feature) {

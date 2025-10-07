@@ -26,6 +26,40 @@ class Company {
     required this.contact,
     required this.tags,
   });
+
+  factory Company.fromJson(Map<String, dynamic> json) {
+    return Company(
+      id: json['id'],
+      name: json['name'],
+      industry: json['industry'],
+      size: json['size'],
+      founded: DateTime.parse(json['founded']),
+      revenue: json['revenue'].toDouble(),
+      employees: json['employees'],
+      location: json['location'],
+      website: json['website'],
+      description: json['description'],
+      contact: ContactInfo.fromJson(json['contact']),
+      tags: List<String>.from(json['tags']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'industry': industry,
+      'size': size,
+      'founded': founded.toIso8601String(),
+      'revenue': revenue,
+      'employees': employees,
+      'location': location,
+      'website': website,
+      'description': description,
+      'contact': contact.toJson(),
+      'tags': tags,
+    };
+  }
 }
 
 class ContactInfo {
@@ -38,4 +72,16 @@ class ContactInfo {
     required this.phone,
     required this.address,
   });
+
+  factory ContactInfo.fromJson(Map<String, dynamic> json) {
+    return ContactInfo(
+      email: json['email'],
+      phone: json['phone'],
+      address: json['address'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'email': email, 'phone': phone, 'address': address};
+  }
 }

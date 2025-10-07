@@ -20,7 +20,7 @@ class StatCard extends StatelessWidget {
       width: 200,
       height: 120,
       decoration: BoxDecoration(
-        color: FluentTheme.of(context).cardColor, // ✅ Respeta el tema
+        color: FluentTheme.of(context).cardColor,
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(

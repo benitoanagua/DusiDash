@@ -2,6 +2,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/theme_provider.dart';
+import '../providers/auth_provider.dart';
 import '../layouts/auth_layout.dart';
 import '../layouts/non_auth_layout.dart';
 import '../screens/dashboard_screen.dart';
@@ -9,6 +10,7 @@ import '../screens/users_screen.dart';
 import '../screens/companies_screen.dart';
 import '../screens/reports_screen.dart';
 import '../screens/settings_screen.dart';
+import '../screens/login_screen.dart';
 import '../screens/user_detail_screen.dart';
 
 class App extends StatelessWidget {
@@ -37,52 +39,36 @@ class App extends StatelessWidget {
   }
 }
 
-class _LoginScreen extends StatelessWidget {
-  const _LoginScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        TextBox(
-          placeholder: 'Username',
-          prefix: const Icon(FluentIcons.contact),
-        ),
-        const SizedBox(height: 16),
-        TextBox(
-          placeholder: 'Password',
-          obscureText: true,
-          prefix: const Icon(FluentIcons.password_field),
-        ),
-        const SizedBox(height: 24),
-        FilledButton(
-          onPressed: () {
-            context.go('/dashboard');
-          },
-          child: const Text('Sign In'),
-        ),
-      ],
-    );
-  }
-}
-
 final GoRouter _router = GoRouter(
   initialLocation: '/login',
+  redirect: (context, state) {
+    final authProvider = context.read<AuthProvider>();
+    final isAuthenticated = authProvider.isAuthenticated;
+    final isGoingToLogin = state.uri.path == '/login';
+
+    if (!isAuthenticated && !isGoingToLogin) {
+      return '/login';
+    }
+
+    if (isAuthenticated && isGoingToLogin) {
+      return '/dashboard';
+    }
+
+    return null;
+  },
   routes: [
     GoRoute(
       path: '/login',
       pageBuilder: (context, state) {
         return CustomTransitionPage(
           key: state.pageKey,
-          child: const NonAuthLayout(child: _LoginScreen()),
+          child: const NonAuthLayout(child: LoginScreen()),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return child;
+            return FadeTransition(opacity: animation, child: child);
           },
         );
       },
     ),
-
     ShellRoute(
       builder: (context, state, child) {
         return AuthLayout(child: child);
@@ -107,11 +93,11 @@ final GoRouter _router = GoRouter(
           },
         ),
         GoRoute(
-          path: '/users/:id',
+          path: '/users/:userId',
           pageBuilder: (context, state) {
             return NoTransitionPage(
               key: state.pageKey,
-              child: UserDetailScreen(userId: state.pathParameters['id']!),
+              child: UserDetailScreen(userId: state.pathParameters['userId']!),
             );
           },
         ),
