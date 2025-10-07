@@ -65,15 +65,19 @@ class _CompaniesScreenState extends State<CompaniesScreen> {
           ),
         ),
         const SizedBox(width: 16),
-        FilledButton(
-          onPressed: () => _showAddCompanyDialog(context),
-          child: const Row(
-            children: [
-              Icon(FluentIcons.add),
-              SizedBox(width: 8),
-              Text('Add Company'),
-            ],
-          ),
+        CommandBar(
+          overflowBehavior: CommandBarOverflowBehavior.noWrap,
+          primaryItems: [
+            CommandBarBuilderItem(
+              builder: (context, mode, w) =>
+                  Tooltip(message: 'Add a new company', child: w),
+              wrappedItem: CommandBarButton(
+                icon: const Icon(FluentIcons.add),
+                label: const Text('Add Company'),
+                onPressed: () => _showAddCompanyDialog(context),
+              ),
+            ),
+          ],
         ),
       ],
     );

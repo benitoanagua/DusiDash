@@ -12,6 +12,7 @@ class ReportsScreen extends StatefulWidget {
 
 class _ReportsScreenState extends State<ReportsScreen> {
   String _selectedReportType = 'all';
+  final _commandBarKey = GlobalKey<CommandBarState>();
 
   @override
   Widget build(BuildContext context) {
@@ -53,48 +54,45 @@ class _ReportsScreenState extends State<ReportsScreen> {
   }
 
   Widget _buildActionBar(BuildContext context) {
-    return Wrap(
-      spacing: 16,
-      runSpacing: 16,
-      children: [
-        FilledButton(
-          onPressed: () => _generateNewReport(context),
-          child: const Row(
-            children: [
-              Icon(FluentIcons.add),
-              SizedBox(width: 8),
-              Text('Generate Report'),
-            ],
+    return CommandBar(
+      key: _commandBarKey,
+      overflowBehavior: CommandBarOverflowBehavior.dynamicOverflow,
+      primaryItems: [
+        CommandBarBuilderItem(
+          builder: (context, mode, w) =>
+              Tooltip(message: 'Generate a new report', child: w),
+          wrappedItem: CommandBarButton(
+            icon: const Icon(FluentIcons.add),
+            label: const Text('Generate Report'),
+            onPressed: () => _generateNewReport(context),
           ),
         ),
-        FilledButton(
-          onPressed: () => _showComingSoonDialog(context, 'Export All'),
-          child: const Row(
-            children: [
-              Icon(FluentIcons.download),
-              SizedBox(width: 8),
-              Text('Export All'),
-            ],
+        const CommandBarSeparator(),
+        CommandBarBuilderItem(
+          builder: (context, mode, w) =>
+              Tooltip(message: 'Export all reports', child: w),
+          wrappedItem: CommandBarButton(
+            icon: const Icon(FluentIcons.download),
+            label: const Text('Export All'),
+            onPressed: () => _showComingSoonDialog(context, 'Export All'),
           ),
         ),
-        Button(
-          onPressed: () => _showComingSoonDialog(context, 'Print'),
-          child: const Row(
-            children: [
-              Icon(FluentIcons.print),
-              SizedBox(width: 8),
-              Text('Print'),
-            ],
+        CommandBarBuilderItem(
+          builder: (context, mode, w) =>
+              Tooltip(message: 'Print reports', child: w),
+          wrappedItem: CommandBarButton(
+            icon: const Icon(FluentIcons.print),
+            label: const Text('Print'),
+            onPressed: () => _showComingSoonDialog(context, 'Print'),
           ),
         ),
-        Button(
-          onPressed: () => _showComingSoonDialog(context, 'Schedule'),
-          child: const Row(
-            children: [
-              Icon(FluentIcons.calendar),
-              SizedBox(width: 8),
-              Text('Schedule'),
-            ],
+        CommandBarBuilderItem(
+          builder: (context, mode, w) =>
+              Tooltip(message: 'Schedule report generation', child: w),
+          wrappedItem: CommandBarButton(
+            icon: const Icon(FluentIcons.calendar),
+            label: const Text('Schedule'),
+            onPressed: () => _showComingSoonDialog(context, 'Schedule'),
           ),
         ),
       ],
