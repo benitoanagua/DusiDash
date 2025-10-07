@@ -1,7 +1,6 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import '../providers/auth_provider.dart';
 import '../layouts/auth_layout.dart';
 import '../layouts/non_auth_layout.dart';
 import '../screens/dashboard_screen.dart';
@@ -11,6 +10,9 @@ import '../screens/companies_screen.dart';
 import '../screens/reports_screen.dart';
 import '../screens/settings_screen.dart';
 import '../screens/login_screen.dart';
+import '../screens/register_screen.dart';
+import '../screens/forgot_password_screen.dart';
+import '../providers/auth_provider.dart';
 import 'route_paths.dart';
 
 class AppRouter {
@@ -21,12 +23,19 @@ class AppRouter {
         final authProvider = context.read<AuthProvider>();
         final isAuthenticated = authProvider.isAuthenticated;
         final isGoingToLogin = state.uri.path == RoutePaths.login;
+        final isGoingToRegister = state.uri.path == RoutePaths.register;
+        final isGoingToForgotPassword =
+            state.uri.path == RoutePaths.forgotPassword;
 
-        if (!isAuthenticated && !isGoingToLogin) {
+        if (!isAuthenticated &&
+            !isGoingToLogin &&
+            !isGoingToRegister &&
+            !isGoingToForgotPassword) {
           return RoutePaths.login;
         }
 
-        if (isAuthenticated && isGoingToLogin) {
+        if (isAuthenticated &&
+            (isGoingToLogin || isGoingToRegister || isGoingToForgotPassword)) {
           return RoutePaths.dashboard;
         }
 
@@ -69,7 +78,36 @@ class AppRouter {
           },
         ),
 
-        // ShellRoute para el layout autenticado
+        GoRoute(
+          path: RoutePaths.register,
+          name: RouteNames.register,
+          pageBuilder: (context, state) {
+            return CustomTransitionPage(
+              key: state.pageKey,
+              child: const NonAuthLayout(child: RegisterScreen()),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(opacity: animation, child: child);
+                  },
+            );
+          },
+        ),
+
+        GoRoute(
+          path: RoutePaths.forgotPassword,
+          name: RouteNames.forgotPassword,
+          pageBuilder: (context, state) {
+            return CustomTransitionPage(
+              key: state.pageKey,
+              child: const NonAuthLayout(child: ForgotPasswordScreen()),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(opacity: animation, child: child);
+                  },
+            );
+          },
+        ),
+
         ShellRoute(
           builder: (context, state, child) {
             return AuthLayout(child: child);
