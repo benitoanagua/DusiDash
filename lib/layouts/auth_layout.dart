@@ -1,14 +1,10 @@
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/theme_provider.dart';
 import '../providers/auth_provider.dart';
-import '../providers/dashboard_provider.dart';
-import '../screens/dashboard_screen.dart';
-import '../screens/users_screen.dart';
-import '../screens/companies_screen.dart';
-import '../screens/reports_screen.dart';
-import '../screens/settings_screen.dart';
+import '../app/route_paths.dart';
 
 class AuthLayout extends StatefulWidget {
   final Widget child;
@@ -20,52 +16,104 @@ class AuthLayout extends StatefulWidget {
 }
 
 class _AuthLayoutState extends State<AuthLayout> {
-  int _selectedIndex = 0;
-  final _flyoutController = FlyoutController();
+  int selectedNavigation = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSelectedNavigation();
+    _syncSelectedIndexWithRoute();
+  }
+
+  Future<void> _loadSelectedNavigation() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      selectedNavigation = prefs.getInt('selectedNavigation') ?? 0;
+    });
+  }
+
+  Future<void> _saveSelectedNavigation(int index) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setInt('selectedNavigation', index);
+  }
+
+  final Map<String, int> _routeToIndex = {
+    RoutePaths.dashboard: 0,
+    RoutePaths.users: 1,
+    RoutePaths.companies: 2,
+    RoutePaths.reports: 3,
+    RoutePaths.settings: 4,
+  };
 
   final List<NavigationPaneItem> _items = [
     PaneItem(
+      key: const ValueKey('/dashboard'),
       icon: const Icon(FluentIcons.view_dashboard),
       title: const Text('Dashboard'),
-      body: const DashboardScreen(),
+      body: const SizedBox.shrink(),
     ),
     PaneItem(
+      key: const ValueKey('/users'),
       icon: const Icon(FluentIcons.people),
       title: const Text('Users'),
-      body: const UsersScreen(),
+      body: const SizedBox.shrink(),
     ),
     PaneItem(
+      key: const ValueKey('/companies'),
       icon: const Icon(FluentIcons.business_card),
       title: const Text('Companies'),
-      body: const CompaniesScreen(),
+      body: const SizedBox.shrink(),
     ),
     PaneItem(
+      key: const ValueKey('/reports'),
       icon: const Icon(FluentIcons.report_document),
       title: const Text('Reports'),
-      body: const ReportsScreen(),
+      body: const SizedBox.shrink(),
     ),
     PaneItemSeparator(),
     PaneItem(
+      key: const ValueKey('/settings'),
       icon: const Icon(FluentIcons.settings),
       title: const Text('Settings'),
-      body: const SettingsScreen(),
+      body: const SizedBox.shrink(),
     ),
   ];
 
   final List<String> _routes = [
-    '/dashboard',
-    '/users',
-    '/companies',
-    '/reports',
-    '/settings',
+    RoutePaths.dashboard,
+    RoutePaths.users,
+    RoutePaths.companies,
+    RoutePaths.reports,
+    RoutePaths.settings,
   ];
 
-  void _handleNavigation(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+  void _syncSelectedIndexWithRoute() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final currentLocation = GoRouterState.of(context).uri.path;
 
+      int? newIndex;
+
+      newIndex = _routeToIndex[currentLocation];
+
+      if (newIndex == null && currentLocation.startsWith(RoutePaths.users)) {
+        newIndex = _routeToIndex[RoutePaths.users];
+      }
+
+      if (newIndex != null && newIndex != selectedNavigation) {
+        setState(() {
+          selectedNavigation = newIndex!;
+        });
+        _saveSelectedNavigation(newIndex);
+      }
+    });
+  }
+
+  void _handleNavigation(int index) {
     if (index < _routes.length) {
+      setState(() {
+        selectedNavigation = index;
+      });
+      _saveSelectedNavigation(index);
       context.go(_routes[index]);
     }
   }
@@ -74,129 +122,57 @@ class _AuthLayoutState extends State<AuthLayout> {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final authProvider = Provider.of<AuthProvider>(context);
-    final dashboardProvider = Provider.of<DashboardProvider>(context);
 
-    final currentLocation = GoRouterState.of(context).uri.path;
-    final currentIndex = _routes.indexWhere(
-      (route) => route == currentLocation,
-    );
-
-    if (currentIndex != -1 && currentIndex != _selectedIndex) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        setState(() {
-          _selectedIndex = currentIndex;
-        });
-      });
-    }
+    _syncSelectedIndexWithRoute();
 
     return NavigationView(
       appBar: NavigationAppBar(
-        automaticallyImplyLeading: false,
         title: const Text('Dusi Dash'),
-        actions: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            const Spacer(),
-            IconButton(
-              icon: const Icon(FluentIcons.refresh),
-              onPressed: () {
-                dashboardProvider.refreshData();
-              },
-            ),
-            const SizedBox(width: 8),
-            ToggleSwitch(
-              checked: themeProvider.isDark,
-              onChanged: (value) => themeProvider.toggleTheme(),
-              content: const Text('Dark Mode'),
-            ),
-            const SizedBox(width: 16),
-            FlyoutTarget(
-              controller: _flyoutController,
-              child: IconButton(
-                icon: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 16,
-                      child: Text(
-                        authProvider.currentUser?.name
-                                .substring(0, 2)
-                                .toUpperCase() ??
-                            'U',
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      authProvider.currentUser?.name.split(' ').first ?? 'User',
-                    ),
-                    const Icon(FluentIcons.chevron_down),
-                  ],
-                ),
-                onPressed: () {
-                  _flyoutController.showFlyout(
-                    builder: (context) {
-                      return MenuFlyout(
-                        items: [
-                          MenuFlyoutItemBuilder(
-                            builder: (context) {
-                              return Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      authProvider.currentUser?.name ?? 'User',
-                                      style: FluentTheme.of(
-                                        context,
-                                      ).typography.subtitle,
-                                    ),
-                                    Text(
-                                      authProvider.currentUser?.email ?? '',
-                                      style: TextStyle(color: Colors.grey[100]),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
-                          const MenuFlyoutSeparator(),
-                          MenuFlyoutItem(
-                            text: const Text('Profile Settings'),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          MenuFlyoutItem(
-                            text: const Text('Sign Out'),
-                            onPressed: () {
-                              authProvider.logout();
-                              Navigator.of(context).pop();
-                              context.go('/login');
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
-          ],
+        actions: Container(
+          alignment: Alignment.centerRight,
+          padding: const EdgeInsetsDirectional.only(end: 16.0),
+          child: ToggleSwitch(
+            content: const Text('Dark Mode'),
+            checked: themeProvider.isDark,
+            onChanged: (bool v) {
+              themeProvider.toggleTheme();
+            },
+          ),
         ),
       ),
+
+      paneBodyBuilder: (item, body) {
+        return widget.child;
+      },
       pane: NavigationPane(
-        selected: _selectedIndex,
+        size: const NavigationPaneSize(openWidth: 240),
+        selected: selectedNavigation,
         onChanged: _handleNavigation,
         displayMode: PaneDisplayMode.auto,
-        size: const NavigationPaneSize(openWidth: 250),
         items: _items,
         footerItems: [
           PaneItem(
-            icon: const Icon(FluentIcons.help),
-            title: const Text('Help & Support'),
-            body: const SizedBox(),
+            key: const ValueKey('/profile'),
+            icon: const Icon(FluentIcons.contact),
+            title: const Text('Profile'),
+            body: const SizedBox.shrink(),
+          ),
+          PaneItemAction(
+            key: const ValueKey('sign_out'),
+            icon: const Icon(FluentIcons.sign_out),
+            title: Text(
+              'Sign Out - ${authProvider.currentUser?.name.split(' ').first ?? 'User'}',
+            ),
+            onTap: () {
+              authProvider.logout();
+              context.go(RoutePaths.login);
+            },
           ),
         ],
+        header: const Padding(
+          padding: EdgeInsets.symmetric(vertical: 16),
+          child: SizedBox(height: 56, child: FlutterLogo(size: 56)),
+        ),
       ),
     );
   }
