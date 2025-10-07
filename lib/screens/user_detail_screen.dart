@@ -4,6 +4,9 @@ import 'package:go_router/go_router.dart';
 import '../providers/dashboard_provider.dart';
 import '../models/user.dart';
 import '../core/data/faker_service.dart';
+import '../widgets/user_detail/user_badge.dart';
+import '../widgets/user_detail/detail_item.dart';
+import '../widgets/user_detail/activity_item.dart';
 
 class UserDetailScreen extends StatefulWidget {
   final String userId;
@@ -99,17 +102,17 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      _UserBadge(
+                      UserBadge(
                         text: user.role,
                         color: _getRoleColor(user.role),
                       ),
                       const SizedBox(width: 8),
-                      _UserBadge(
+                      UserBadge(
                         text: user.status,
                         color: user.isActive ? Colors.green : Colors.red,
                       ),
                       const SizedBox(width: 8),
-                      _UserBadge(text: user.department, color: Colors.blue),
+                      UserBadge(text: user.department, color: Colors.blue),
                     ],
                   ),
                 ],
@@ -141,38 +144,38 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                     style: FluentTheme.of(context).typography.subtitle,
                   ),
                   const SizedBox(height: 16),
-                  _DetailItem(
+                  DetailItem(
                     icon: FluentIcons.contact,
                     label: 'Full Name',
                     value: user.name,
                   ),
-                  _DetailItem(
+                  DetailItem(
                     icon: FluentIcons.mail,
                     label: 'Email Address',
                     value: user.email,
                   ),
                   if (user.phone != null)
-                    _DetailItem(
+                    DetailItem(
                       icon: FluentIcons.phone,
                       label: 'Phone',
                       value: user.phone!,
                     ),
-                  _DetailItem(
+                  DetailItem(
                     icon: FluentIcons.business_card,
                     label: 'Company',
                     value: user.company,
                   ),
-                  _DetailItem(
+                  DetailItem(
                     icon: FluentIcons.group,
                     label: 'Department',
                     value: user.department,
                   ),
-                  _DetailItem(
+                  DetailItem(
                     icon: FluentIcons.calendar,
                     label: 'Join Date',
                     value: _fakerService.formatDate(user.joinDate),
                   ),
-                  _DetailItem(
+                  DetailItem(
                     icon: FluentIcons.clock,
                     label: 'Last Login',
                     value: _fakerService.timeAgo(user.lastLogin),
@@ -275,25 +278,25 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
               style: FluentTheme.of(context).typography.subtitle,
             ),
             const SizedBox(height: 16),
-            _ActivityItem(
+            ActivityItem(
               icon: FluentIcons.user_gauge,
               title: 'Last Login',
               subtitle: _fakerService.timeAgo(user.lastLogin),
               time: user.lastLogin,
             ),
-            _ActivityItem(
+            ActivityItem(
               icon: FluentIcons.settings,
               title: 'Profile Updated',
               subtitle: 'Personal information modified',
               time: user.joinDate.add(const Duration(days: 30)),
             ),
-            _ActivityItem(
+            ActivityItem(
               icon: FluentIcons.security_group,
               title: 'Permissions Updated',
               subtitle: 'New access level granted',
               time: user.joinDate.add(const Duration(days: 15)),
             ),
-            _ActivityItem(
+            ActivityItem(
               icon: FluentIcons.report_document,
               title: 'Report Generated',
               subtitle: 'Monthly performance report',
@@ -597,119 +600,6 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
           ),
         );
       },
-    );
-  }
-}
-
-class _UserBadge extends StatelessWidget {
-  final String text;
-  final Color color;
-
-  const _UserBadge({required this.text, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 10),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-          color: color,
-        ),
-      ),
-    );
-  }
-}
-
-class _DetailItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-
-  const _DetailItem({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          Icon(icon, size: 16, color: Colors.grey[100]),
-          const SizedBox(width: 12),
-          SizedBox(
-            width: 120,
-            child: Text(
-              '$label:',
-              style: const TextStyle(fontWeight: FontWeight.w500),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(child: Text(value)),
-        ],
-      ),
-    );
-  }
-}
-
-class _ActivityItem extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final DateTime time;
-
-  const _ActivityItem({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.time,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final fakerService = FakerService();
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12.0),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 20,
-            backgroundColor: Colors.blue.withValues(alpha: 10),
-            child: Icon(icon, size: 16, color: Colors.blue),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(fontWeight: FontWeight.w500),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: TextStyle(fontSize: 12, color: Colors.grey[100]),
-                ),
-              ],
-            ),
-          ),
-          Text(
-            fakerService.timeAgo(time),
-            style: TextStyle(fontSize: 12, color: Colors.grey[100]),
-          ),
-        ],
-      ),
     );
   }
 }
