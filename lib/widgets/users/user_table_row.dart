@@ -8,6 +8,10 @@ class UserTableRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void viewUserDetails() {
+      context.go('/users/${user.id}');
+    }
+
     return Container(
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: Colors.grey[30])),
@@ -18,7 +22,8 @@ class UserTableRow extends StatelessWidget {
         ),
         title: Text(user.name),
         subtitle: _UserDetails(user: user),
-        trailing: _ActionButtons(user: user),
+        trailing: _ActionButtons(user: user, onViewDetails: viewUserDetails),
+        onPressed: viewUserDetails,
       ),
     );
   }
@@ -78,8 +83,9 @@ class _RoleBadge extends StatelessWidget {
 
 class _ActionButtons extends StatelessWidget {
   final dynamic user;
+  final VoidCallback onViewDetails;
 
-  const _ActionButtons({required this.user});
+  const _ActionButtons({required this.user, required this.onViewDetails});
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +94,7 @@ class _ActionButtons extends StatelessWidget {
       children: [
         IconButton(
           icon: const Icon(FluentIcons.edit, size: 16),
-          onPressed: () => _viewUserDetails(context, user.id),
+          onPressed: onViewDetails,
         ),
         IconButton(
           icon: const Icon(FluentIcons.delete, size: 16),
@@ -96,10 +102,6 @@ class _ActionButtons extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  void _viewUserDetails(BuildContext context, String userId) {
-    context.go('/users/$userId');
   }
 
   void _showDeleteDialog(BuildContext context, user) {

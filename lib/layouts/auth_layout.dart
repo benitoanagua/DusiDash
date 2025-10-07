@@ -94,7 +94,9 @@ class _AuthLayoutState extends State<AuthLayout> {
         automaticallyImplyLeading: false,
         title: const Text('Dusi Dash'),
         actions: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
+            const Spacer(),
             IconButton(
               icon: const Icon(FluentIcons.refresh),
               onPressed: () {
