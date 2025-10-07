@@ -14,7 +14,7 @@ import '../screens/login_screen.dart';
 import 'route_paths.dart';
 
 class AppRouter {
-  static GoRouter createRouter(BuildContext context) {
+  static GoRouter createRouter() {
     return GoRouter(
       initialLocation: RoutePaths.login,
       redirect: (context, state) {

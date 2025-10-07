@@ -22,7 +22,15 @@ class _AuthLayoutState extends State<AuthLayout> {
   void initState() {
     super.initState();
     _loadSelectedNavigation();
-    _syncSelectedIndexWithRoute();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _syncSelectedIndexWithRoute();
+    });
   }
 
   Future<void> _loadSelectedNavigation() async {
@@ -88,24 +96,22 @@ class _AuthLayoutState extends State<AuthLayout> {
   ];
 
   void _syncSelectedIndexWithRoute() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final currentLocation = GoRouterState.of(context).uri.path;
+    final currentLocation = GoRouterState.of(context).uri.path;
 
-      int? newIndex;
+    int? newIndex;
 
-      newIndex = _routeToIndex[currentLocation];
+    newIndex = _routeToIndex[currentLocation];
 
-      if (newIndex == null && currentLocation.startsWith(RoutePaths.users)) {
-        newIndex = _routeToIndex[RoutePaths.users];
-      }
+    if (newIndex == null && currentLocation.startsWith(RoutePaths.users)) {
+      newIndex = _routeToIndex[RoutePaths.users];
+    }
 
-      if (newIndex != null && newIndex != selectedNavigation) {
-        setState(() {
-          selectedNavigation = newIndex!;
-        });
-        _saveSelectedNavigation(newIndex);
-      }
-    });
+    if (newIndex != null && newIndex != selectedNavigation) {
+      setState(() {
+        selectedNavigation = newIndex!;
+      });
+      _saveSelectedNavigation(newIndex);
+    }
   }
 
   void _handleNavigation(int index) {
@@ -120,14 +126,15 @@ class _AuthLayoutState extends State<AuthLayout> {
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    final authProvider = Provider.of<AuthProvider>(context);
-
-    _syncSelectedIndexWithRoute();
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     return NavigationView(
       appBar: NavigationAppBar(
-        title: const Text('Dusi Dash'),
+        title: Text(
+          'Dusi Dash',
+          style: FluentTheme.of(context).typography.title,
+        ),
         actions: Container(
           alignment: Alignment.centerRight,
           padding: const EdgeInsetsDirectional.only(end: 16.0),
@@ -140,7 +147,6 @@ class _AuthLayoutState extends State<AuthLayout> {
           ),
         ),
       ),
-
       paneBodyBuilder: (item, body) {
         return widget.child;
       },

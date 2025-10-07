@@ -4,14 +4,25 @@ import 'package:go_router/go_router.dart';
 import '../providers/theme_provider.dart';
 import 'app_router.dart';
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   const App({super.key});
+
+  @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  late final GoRouter _router;
+
+  @override
+  void initState() {
+    super.initState();
+    _router = AppRouter.createRouter();
+  }
 
   @override
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
-
-    final GoRouter router = AppRouter.createRouter(context);
 
     return FluentApp.router(
       title: 'Dusi Dash',
@@ -24,7 +35,7 @@ class App extends StatelessWidget {
         brightness: Brightness.dark,
         accentColor: Colors.blue,
       ),
-      routerConfig: router,
+      routerConfig: _router,
       locale: const Locale('es'),
       supportedLocales: const [Locale('en'), Locale('es')],
       debugShowCheckedModeBanner: false,
