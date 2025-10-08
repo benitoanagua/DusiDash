@@ -55,27 +55,9 @@ class NonAuthLayout extends StatelessWidget {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              // Logo de Flutter
-                              Container(
-                                height: 80,
-                                width: 80,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withValues(
-                                        alpha: 0.1,
-                                      ),
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: const FlutterLogo(
-                                  size: 60,
-                                  style: FlutterLogoStyle.horizontal,
-                                ),
+                              const FlutterLogo(
+                                size: 128,
+                                style: FlutterLogoStyle.stacked,
                               ),
                               const SizedBox(height: 16.0),
                               Text(
