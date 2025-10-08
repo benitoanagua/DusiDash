@@ -32,6 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
       key: _formKey,
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           InfoLabel(
             label: 'Username or Email',
@@ -54,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
           InfoLabel(
             label: 'Password',
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Row(
                   children: [
@@ -116,10 +117,9 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           const SizedBox(height: 24),
           authProvider.isLoading
-              ? const ProgressRing()
+              ? const Center(child: ProgressRing())
               : FilledButton(
                   onPressed: () async {
-                    // Validación manual
                     final username = _usernameController.text;
                     final password = _passwordController.text;
 

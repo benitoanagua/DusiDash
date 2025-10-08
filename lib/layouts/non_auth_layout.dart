@@ -9,6 +9,7 @@ class NonAuthLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
+        // Imagen remota de fondo
         Positioned.fill(
           child: Image.network(
             'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
@@ -34,55 +35,75 @@ class NonAuthLayout extends StatelessWidget {
             },
           ),
         ),
-        Center(
-          child: Container(
-            width: 512,
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const FlutterLogo(
-                  size: 256,
-                  style: FlutterLogoStyle.horizontal,
-                ),
-                const SizedBox(height: 8.0),
-                Text(
-                  'Dusi Dash',
-                  style: FluentTheme.of(context).typography.title?.copyWith(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 8.0),
-                Text(
-                  'Business Management Dashboard',
-                  style: FluentTheme.of(context).typography.body?.copyWith(
-                    color: Colors.white.withValues(alpha: 0.9),
-                    fontSize: 16,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 32.0),
-                Acrylic(
-                  luminosityAlpha: 0.9,
-                  tintAlpha: 0.8,
-                  tint: Colors.blue.withValues(alpha: 0.3),
+        // Layout principal con scroll
+        LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Center(
                   child: Container(
-                    padding: const EdgeInsets.all(32.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        width: 1,
+                    constraints: BoxConstraints(maxWidth: 500),
+                    margin: const EdgeInsets.all(20),
+                    child: Acrylic(
+                      luminosityAlpha: 0.9,
+                      tintAlpha: 0.8,
+                      tint: Colors.blue.withValues(alpha: 0.3),
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(32.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Logo de Flutter
+                              Container(
+                                height: 80,
+                                width: 80,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(
+                                        alpha: 0.1,
+                                      ),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: const FlutterLogo(
+                                  size: 60,
+                                  style: FlutterLogoStyle.horizontal,
+                                ),
+                              ),
+                              const SizedBox(height: 16.0),
+                              Text(
+                                'Dusi Dash',
+                                style: FluentTheme.of(context).typography.title
+                                    ?.copyWith(
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                              ),
+                              const SizedBox(height: 8.0),
+                              Text(
+                                'Business Management Dashboard',
+                                style: FluentTheme.of(context).typography.body,
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 24.0),
+                              child,
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                    child: child,
                   ),
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ],
     );

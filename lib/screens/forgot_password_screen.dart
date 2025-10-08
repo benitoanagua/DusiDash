@@ -25,14 +25,20 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Form(
       key: _formKey,
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.min, // Alto según contenido
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (!_emailSent) ...[
-            Icon(FluentIcons.lock, size: 64, color: Colors.blue),
+            Icon(
+              FluentIcons.lock,
+              size: 64,
+              color: Colors.successSecondaryColor,
+            ),
             const SizedBox(height: 16),
             Text(
               'Reset Your Password',
               style: FluentTheme.of(context).typography.title,
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
@@ -61,15 +67,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             const SizedBox(height: 24),
             _isLoading
                 ? const ProgressRing()
-                : Row(
-                    children: [
-                      Expanded(
-                        child: FilledButton(
-                          onPressed: _resetPassword,
-                          child: const Text('Send Reset Link'),
-                        ),
-                      ),
-                    ],
+                : FilledButton(
+                    onPressed: _resetPassword,
+                    child: const Text('Send Reset Link'),
                   ),
           ] else ...[
             const Icon(
@@ -81,6 +81,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             Text(
               'Check Your Email',
               style: FluentTheme.of(context).typography.title,
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(

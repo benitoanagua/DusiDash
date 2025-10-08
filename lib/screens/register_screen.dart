@@ -41,6 +41,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       key: _formKey,
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             children: [
@@ -124,29 +125,46 @@ class _RegisterScreenState extends State<RegisterScreen> {
           InfoLabel(
             label: 'Password',
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                PasswordBox(
-                  controller: _passwordController,
-                  placeholder: 'Create a password',
-                  revealMode: _passwordRevealMode,
-                ),
-                const SizedBox(height: 8),
                 Row(
                   children: [
-                    ToggleSwitch(
-                      content: const Text('Show password'),
-                      checked:
-                          _passwordRevealMode == PasswordRevealMode.visible,
-                      onChanged: (value) {
+                    Expanded(
+                      child: PasswordBox(
+                        controller: _passwordController,
+                        placeholder: 'Create a password',
+                        revealMode: _passwordRevealMode,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    IconButton(
+                      icon: Icon(
+                        _passwordRevealMode == PasswordRevealMode.visible
+                            ? FluentIcons.view
+                            : FluentIcons.hide3,
+                      ),
+                      onPressed: () {
                         setState(() {
-                          _passwordRevealMode = value
-                              ? PasswordRevealMode.visible
-                              : PasswordRevealMode.hidden;
+                          _passwordRevealMode =
+                              _passwordRevealMode == PasswordRevealMode.visible
+                              ? PasswordRevealMode.hidden
+                              : PasswordRevealMode.visible;
                         });
                       },
                     ),
                   ],
+                ),
+                const SizedBox(height: 8),
+                ToggleSwitch(
+                  content: const Text('Show password'),
+                  checked: _passwordRevealMode == PasswordRevealMode.visible,
+                  onChanged: (value) {
+                    setState(() {
+                      _passwordRevealMode = value
+                          ? PasswordRevealMode.visible
+                          : PasswordRevealMode.hidden;
+                    });
+                  },
                 ),
               ],
             ),
@@ -155,30 +173,48 @@ class _RegisterScreenState extends State<RegisterScreen> {
           InfoLabel(
             label: 'Confirm Password',
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                PasswordBox(
-                  controller: _confirmPasswordController,
-                  placeholder: 'Confirm your password',
-                  revealMode: _confirmPasswordRevealMode,
-                ),
-                const SizedBox(height: 8),
                 Row(
                   children: [
-                    ToggleSwitch(
-                      content: const Text('Show password'),
-                      checked:
-                          _confirmPasswordRevealMode ==
-                          PasswordRevealMode.visible,
-                      onChanged: (value) {
+                    Expanded(
+                      child: PasswordBox(
+                        controller: _confirmPasswordController,
+                        placeholder: 'Confirm your password',
+                        revealMode: _confirmPasswordRevealMode,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    IconButton(
+                      icon: Icon(
+                        _confirmPasswordRevealMode == PasswordRevealMode.visible
+                            ? FluentIcons.view
+                            : FluentIcons.hide3,
+                      ),
+                      onPressed: () {
                         setState(() {
-                          _confirmPasswordRevealMode = value
-                              ? PasswordRevealMode.visible
-                              : PasswordRevealMode.hidden;
+                          _confirmPasswordRevealMode =
+                              _confirmPasswordRevealMode ==
+                                  PasswordRevealMode.visible
+                              ? PasswordRevealMode.hidden
+                              : PasswordRevealMode.visible;
                         });
                       },
                     ),
                   ],
+                ),
+                const SizedBox(height: 8),
+                ToggleSwitch(
+                  content: const Text('Show password'),
+                  checked:
+                      _confirmPasswordRevealMode == PasswordRevealMode.visible,
+                  onChanged: (value) {
+                    setState(() {
+                      _confirmPasswordRevealMode = value
+                          ? PasswordRevealMode.visible
+                          : PasswordRevealMode.hidden;
+                    });
+                  },
                 ),
               ],
             ),
@@ -195,15 +231,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ],
           ),
           const SizedBox(height: 24),
-          Row(
-            children: [
-              Expanded(
-                child: FilledButton(
-                  onPressed: _acceptTerms ? _register : null,
-                  child: const Text('Create Account'),
-                ),
-              ),
-            ],
+          FilledButton(
+            onPressed: _acceptTerms ? _register : null,
+            child: const Text('Create Account'),
           ),
           const SizedBox(height: 16),
           Row(
