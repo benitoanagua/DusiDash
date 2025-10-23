@@ -2,7 +2,7 @@
 
 A professional business management dashboard built with Flutter and Microsoft's Fluent UI design system.
 
-**Live Demo**: [https://dusidash.surge.sh](https://dusidash.surge.sh)
+**Live Demo**: [https://dusidash.pages.dev](https://dusidash.pages.dev)
 
 ## Overview
 
